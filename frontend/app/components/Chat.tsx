@@ -40,7 +40,7 @@ const Chat: React.FC<{ user: User }> = ({ user }) => {
     fetchMessages();
 
 
-    const newSocket = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL!.replace('http', 'ws')}/ws`);
+    const newSocket = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL!.replace('http', 'ws')}/ws?user_id=${user.id}`);
     setSocket(newSocket);
 
     newSocket.onmessage = (event) => {
@@ -49,7 +49,7 @@ const Chat: React.FC<{ user: User }> = ({ user }) => {
     };
 
     return () => newSocket.close();
-  }, []);
+  }, [user.id]);
 
 
   const sendMessage = async () => {
