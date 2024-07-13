@@ -60,20 +60,20 @@ async def get_my_user():
 
 
 @app.post("/users/", response_model=UserRead)
-async def create_user_endpoint(user: UserCreate, db: AsyncSession = Depends(get_async_db)):
-    db_user = create_user(next(get_sync_db()), user)
+async def create_user_endpoint(user: UserCreate, db: Session = Depends(get_sync_db)):
+    db_user = create_user(db, user)
     return UserRead(id=db_user.id, name=db_user.name)
 
 
 @app.get("/messages/", response_model=list[Message])
-async def read_messages(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_async_db)):
-    messages = get_messages(next(get_sync_db()), skip=skip, limit=limit)
+async def read_messages(skip: int = 0, limit: int = 100, db: Session = Depends(get_sync_db)):
+    messages = get_messages(db, skip=skip, limit=limit)
     return messages
 
 
 @app.post("/messages/", response_model=Message)
-async def create_message_endpoint(message: MessageCreate, db: AsyncSession = Depends(get_async_db)):
-    db_message = create_message(next(get_sync_db()), message)
+async def create_message_endpoint(message: MessageCreate, db: Session = Depends(get_sync_db)):
+    db_message = create_message(db, message)
     return db_message
 
 
