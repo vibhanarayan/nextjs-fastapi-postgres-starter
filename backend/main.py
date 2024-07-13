@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Depends, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -78,13 +78,13 @@ async def create_message_endpoint(message: MessageCreate, db: AsyncSession = Dep
 
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_sync_db)):
+async def websocket_endpoint(websocket: WebSocket, user_id: int = Query(...), db: Session = Depends(get_sync_db)):
     await websocket.accept()
     try:
         while True:
             data = await websocket.receive_text()
             # Save user message
-            user_message = MessageCreate(content=data, user_id=1)  # Assuming user_id 1 for simplicity
+            user_message = MessageCreate(content=data, user_id=user_id)  # Assuming user_id 1 for simplicity
             create_message(db, user_message)
             # Respond to user
             response = f"Bot response to: {data}"
